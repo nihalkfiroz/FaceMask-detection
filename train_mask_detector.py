@@ -22,11 +22,13 @@ import os
 
 # initialize the initial learning rate, number of epochs to train for,
 # and batch size
+#initial learning rate create for a machinelearning model
 INIT_LR = 1e-4
+#which is the number of time iterate  over the enter the data set during training
 EPOCHS = 20
 BS = 32
-
-DIRECTORY = r"C:\Users\user\Desktop\FaceMask\dataset"
+#batchsize
+DIRECTORY = r"C:\Users\user\Documents\GitHub\FaceMask-detection\dataset"
 CATEGORIES = ["with_mask", "without_mask"]
 
 # grab the list of images in our dataset directory, then initialize
@@ -35,6 +37,7 @@ print("[INFO] loading images...")
 
 data = []
 labels = []
+#empty list is to store the  preprocess images data and corresponding labels
 
 for category in CATEGORIES:
     path = os.path.join(DIRECTORY, category)
@@ -42,19 +45,21 @@ for category in CATEGORIES:
     	img_path = os.path.join(path, img)
     	image = load_img(img_path, target_size=(224, 224))
     	image = img_to_array(image)
+		#convert image into numpyarray
     	image = preprocess_input(image)
 
     	data.append(image)
     	labels.append(category)
 
 # perform one-hot encoding on the labels
+#it is used to convert categorical label into binary vector , eg:With mask and without mask
 lb = LabelBinarizer()
 labels = lb.fit_transform(labels)
 labels = to_categorical(labels)
 
 data = np.array(data, dtype="float32")
 labels = np.array(labels)
-
+#splitting dataset into training set and test set
 (trainX, testX, trainY, testY) = train_test_split(data, labels,
 	test_size=0.20, stratify=labels, random_state=42)
 
