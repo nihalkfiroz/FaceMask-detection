@@ -1,4 +1,5 @@
 # import the necessary packages
+#framework used to deeplearning
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.layers import AveragePooling2D
@@ -22,13 +23,11 @@ import os
 
 # initialize the initial learning rate, number of epochs to train for,
 # and batch size
-#initial learning rate create for a machinelearning model
 INIT_LR = 1e-4
-#which is the number of time iterate  over the enter the data set during training
 EPOCHS = 20
 BS = 32
-#batchsize
-DIRECTORY = r"C:\Users\user\Documents\GitHub\FaceMask-detection\dataset"
+
+DIRECTORY = r"C:\Users\HP\Desktop\ML\Face-Mask-Detection-master\dataset"
 CATEGORIES = ["with_mask", "without_mask"]
 
 # grab the list of images in our dataset directory, then initialize
@@ -37,33 +36,37 @@ print("[INFO] loading images...")
 
 data = []
 labels = []
-#empty list is to store the  preprocess images data and corresponding labels
 
 for category in CATEGORIES:
     path = os.path.join(DIRECTORY, category)
+	#for image in each path
     for img in os.listdir(path):
     	img_path = os.path.join(path, img)
+		#change size of images
     	image = load_img(img_path, target_size=(224, 224))
     	image = img_to_array(image)
-		#convert image into numpyarray
+		#program that processes its input data to produce output that is used as input to another program
     	image = preprocess_input(image)
 
     	data.append(image)
     	labels.append(category)
 
 # perform one-hot encoding on the labels
-#it is used to convert categorical label into binary vector , eg:With mask and without mask
+#Convert categorical into numerical(image string to numberical like 0,1..)
 lb = LabelBinarizer()
+#used to fit the data into a model and transform it into a form that is more suitable for the model
 labels = lb.fit_transform(labels)
+#Convert the binary vectors into categorical format
 labels = to_categorical(labels)
 
 data = np.array(data, dtype="float32")
 labels = np.array(labels)
-#splitting dataset into training set and test set
+
 (trainX, testX, trainY, testY) = train_test_split(data, labels,
 	test_size=0.20, stratify=labels, random_state=42)
 
 # construct the training image generator for data augmentation
+# if data is less generate data with fi0,rotate
 aug = ImageDataGenerator(
 	rotation_range=20,
 	zoom_range=0.15,
@@ -98,7 +101,7 @@ for layer in baseModel.layers:
 
 # compile our model
 print("[INFO] compiling model...")
-opt = Adam(learning_rate=INIT_LR)
+opt = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
 model.compile(loss="binary_crossentropy", optimizer=opt,
 	metrics=["accuracy"])
 
